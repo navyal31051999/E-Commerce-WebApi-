@@ -11,12 +11,12 @@ using Core.Interfaces;
 using Core.Specifications;
 using WebapiDemo.Dtos;
 using AutoMapper;
+using WebapiDemo.Errors;
 
 namespace WebapiDemo.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+
+    public class ProductController : BaseApiController
     {
         private readonly IGenericRepository<Product> _productsRepo;
         private readonly IGenericRepository<ProductBrand> _productBrandRepo;
@@ -56,6 +56,8 @@ namespace WebapiDemo.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductToReturnDto>> GetProducts(int id)
         {
 
@@ -72,6 +74,7 @@ namespace WebapiDemo.Controllers
             //     ProductBrand = product.ProductBrand.Name,
             //     ProductType = product.ProductType.Name
             // };
+            if (product == null) return NotFound(new ApiResponse(404));
             return _mapper.Map<Product, ProductToReturnDto>(product);
         }
 
